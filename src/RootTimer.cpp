@@ -8,18 +8,18 @@ RootTimer::RootTimer(unsigned int baseIntervalNs) {
 void RootTimer::timerLoop() {
     while(this->isRunning.load()) {
         std::this_thread::sleep_for(std::chrono::nanoseconds(baseIntervalNs));
-        std::cout << "Loop" << std::endl;
+        PLOG_DEBUG << "Loop";
     }
 
-    std::cout << "Timer loop finished." << std::endl;
+    PLOG_DEBUG << "Root timer loop finished";
 }
 
 void RootTimer::start() {
     this->isRunning.store(true);
-    std::cout << "Start" << std::endl;
+    PLOG_DEBUG << "Starting root timer loop";
     auto thread = std::thread(&RootTimer::timerLoop, this);
     thread.detach();
-    std::cout << "Started" << std::endl;
+    PLOG_DEBUG << "Root timer loop started";
 }
 
 void RootTimer::stop() {

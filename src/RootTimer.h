@@ -3,6 +3,7 @@
 
 #include <thread>
 #include <iostream>
+#include <plog/Log.h>
 
 class RootTimer {
 private:

@@ -21,14 +21,25 @@ if(NOT catch2_POPULATED)
     add_subdirectory(${catch2_SOURCE_DIR} ${catch2_BINARY_DIR})
 endif()
 
+FetchContent_Declare(plog
+        GIT_REPOSITORY "https://github.com/SergiusTheBest/plog.git"
+        GIT_TAG "1.1.5")
+FetchContent_GetProperties(plog)
+if(NOT plog_POPULATED)
+    FetchContent_Populate(plog)
+    add_subdirectory(${plog_SOURCE_DIR} ${plog_BINARY_DIR})
+endif()
+
 add_library(timer src/RootTimer.cpp)
-target_include_directories(timer PUBLIC src)
+target_include_directories(timer PUBLIC src ${plog_SOURCE_DIR}/include)
 
 add_executable(main src/main.cpp)
+target_include_directories(main PRIVATE ${plog_SOURCE_DIR}/include)
 target_link_libraries(main PRIVATE timer)
+
 add_executable(unit_tests test/RootTimerTests.cpp)
-target_include_directories(unit_tests PRIVATE ${catch2_SOURCE_DIR}/single_include/catch2)
-target_link_libraries(unit_tests Catch2::Catch2)
+target_include_directories(unit_tests PRIVATE ${catch2_SOURCE_DIR}/single_include/catch2 )
+target_link_libraries(unit_tests Catch2::Catch2 plog)
 
 include(CTest)
 list(APPEND CMAKE_MODULE_PATH "${catch2_SOURCE_DIR}/contrib")
