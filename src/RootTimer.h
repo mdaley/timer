@@ -1,15 +1,20 @@
 #ifndef TIMER_ROOTTIMER_H
 #define TIMER_ROOTTIMER_H
 
-
-#include <map>
-#include <queue>
+#include <thread>
+#include <iostream>
 
 class RootTimer {
 private:
-    int baseIntervalNs;
+    unsigned int baseIntervalNs;
+    std::atomic<bool> isRunning;
+
+    void timerLoop();
+
 public:
-    RootTimer(const int baseIntervalNs);
+    RootTimer(unsigned int baseIntervalNs);
+    void start();
+    void stop();
 };
 
 
