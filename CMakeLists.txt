@@ -11,6 +11,7 @@ project(timer)
 set(CMAKE_CXX_STANDARD 11)
 
 include(FetchContent)
+include(ExternalProject)
 
 FetchContent_Declare(Catch2
         GIT_REPOSITORY "https://github.com/catchorg/Catch2.git"
@@ -30,12 +31,28 @@ if(NOT plog_POPULATED)
     add_subdirectory(${plog_SOURCE_DIR} ${plog_BINARY_DIR})
 endif()
 
+include(ExternalProject)
+ExternalProject_Add(libconfig
+        GIT_REPOSITORY https://github.com/hyperrealm/libconfig.git
+        # Latest version doesn't work but master does, so use latest commit!
+        GIT_TAG "f53e5de4528b47195f9a02c502e4f244070b0468"
+        PREFIX "_deps/libconfig"
+        SOURCE_DIR ${libconfig_SOURCE_DIR}
+        BUILD_IN_SOURCE 1
+        CMAKE_CACHE_ARGS
+            -DBUILD_EXAMPLES:BOOL=OFF
+            -DBUILD_TESTS:BOOL=OFF)
+
+ExternalProject_Get_Property(libconfig SOURCE_DIR)
+message("libconfig Source Dir = ${SOURCE_DIR}")
+set(libconfig_SOURCE_DIR ${SOURCE_DIR})
+
 add_library(timer src/RootTimer.cpp)
 target_include_directories(timer PUBLIC src ${plog_SOURCE_DIR}/include)
 
 add_executable(main src/main.cpp)
-target_include_directories(main PRIVATE ${plog_SOURCE_DIR}/include)
-target_link_libraries(main PRIVATE timer)
+target_include_directories(main PRIVATE ${plog_SOURCE_DIR}/include ${libconfig_SOURCE_DIR}/lib)
+target_link_libraries(main PRIVATE timer ${libconfig_SOURCE_DIR}/out/libconfig++.dylib)
 
 add_executable(unit_tests test/RootTimerTests.cpp)
 target_include_directories(unit_tests PRIVATE ${catch2_SOURCE_DIR}/single_include/catch2 )
