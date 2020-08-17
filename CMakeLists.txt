@@ -50,7 +50,7 @@ set(libconfig_SOURCE_DIR ${SOURCE_DIR})
 add_library(timer src/RootTimer.cpp)
 target_include_directories(timer PUBLIC src ${plog_SOURCE_DIR}/include)
 
-add_executable(main src/main.cpp)
+add_executable(main src/main.cpp src/Config.cpp src/Config.h)
 target_include_directories(main PRIVATE ${plog_SOURCE_DIR}/include ${libconfig_SOURCE_DIR}/lib)
 target_link_libraries(main PRIVATE timer ${libconfig_SOURCE_DIR}/out/libconfig++.dylib)
 
