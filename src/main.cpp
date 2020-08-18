@@ -5,18 +5,24 @@
 #include <plog/Appenders/ConsoleAppender.h>
 
 int main(int argc, char* argv[]) {
-    plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
-    plog::init(plog::debug, "timer_log.txt").addAppender(&consoleAppender);
 
     Config cfg;
 
     if (argc != 2) {
-        PLOGE << "Configuration files not specified as first argument. Aborting...";
+        std::cout << "Configuration files not specified as first argument. Aborting...";
         return 1;
     }
 
     if (!cfg.load(argv[1])) {
         return 1;
+    }
+
+
+    plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
+    plog::Logger<0>& logger = plog::init(cfg.loggingLevel(), cfg.logFileName().c_str());
+
+    if (cfg.logToConsole()) {
+        logger.addAppender(&consoleAppender);
     }
 
     PLOG_INFO << "Main start";
