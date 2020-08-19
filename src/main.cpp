@@ -9,7 +9,7 @@ int main(int argc, char* argv[]) {
     Config cfg;
 
     if (argc != 2) {
-        std::cout << "Configuration files not specified as first argument. Aborting...";
+        std::cout << "Configuration files not specified as first argument. Aborting..." << std::endl;
         return 1;
     }
 
