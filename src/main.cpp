@@ -28,6 +28,7 @@ int main(int argc, char* argv[]) {
     PLOG_INFO << "Main start";
 
     RootTimer timer(cfg.rootTimerIntervalNs());
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     timer.start();
     std::this_thread::sleep_for(std::chrono::seconds(5));
     timer.stop();

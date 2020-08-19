@@ -8,7 +8,7 @@
 class RootTimer {
 private:
     unsigned int baseIntervalNs;
-    std::atomic<bool> isRunning;
+    std::atomic<bool> isRunning{false};
 
     void timerLoop();
 

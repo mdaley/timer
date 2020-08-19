@@ -1,7 +1,6 @@
 #include "RootTimer.h"
 
 RootTimer::RootTimer(unsigned int baseIntervalNs) {
-    this->isRunning.store(false);
     this->baseIntervalNs = baseIntervalNs;
 }
 
