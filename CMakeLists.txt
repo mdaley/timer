@@ -47,7 +47,7 @@ ExternalProject_Get_Property(libconfig SOURCE_DIR)
 message("libconfig Source Dir = ${SOURCE_DIR}")
 set(libconfig_SOURCE_DIR ${SOURCE_DIR})
 
-add_library(timer src/RootTimer.cpp src/Config.cpp src/Config.h src/Sync.h src/RwConcurrentUnorderedMap.h)
+add_library(timer src/RootTimer.cpp src/Config.cpp src/Config.h src/Sync.h src/RwConcurrentUnorderedMap.h src/RandomGenerator.h)
 target_include_directories(timer PUBLIC src ${plog_SOURCE_DIR}/include ${libconfig_SOURCE_DIR}/lib)
 target_link_libraries(timer PRIVATE ${libconfig_SOURCE_DIR}/out/libconfig++.dylib)
 
@@ -55,7 +55,7 @@ add_executable(main src/main.cpp)
 target_include_directories(main PRIVATE src)
 target_link_libraries(main PRIVATE timer)
 
-add_executable(unit_tests test/TestMain.cpp test/RootTimerTests.cpp test/ConfigTests.cpp)
+add_executable(unit_tests test/TestMain.cpp test/RootTimerTests.cpp test/ConfigTests.cpp test/RandomGeneratorTest.cpp)
 target_include_directories(unit_tests PRIVATE src ${catch2_SOURCE_DIR}/single_include/catch2 ${libconfig_SOURCE_DIR}/lib)
 target_link_libraries(unit_tests timer Catch2::Catch2 plog ${libconfig_SOURCE_DIR}/out/libconfig++.dylib)
 

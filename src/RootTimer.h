@@ -4,11 +4,18 @@
 #include <thread>
 #include <iostream>
 #include <plog/Log.h>
+#include "RandomGenerator.h"
+#include "RwConcurrentUnorderedMap.h"
+#include "Sync.h"
 
 class RootTimer {
 private:
+    RandomGenerator generator;
     unsigned int baseIntervalNs;
     std::atomic<bool> isRunning{false};
+
+    RwConcurrentUnorderedMap<unsigned long, Sync> timerSyncs;
+    std::shared_timed_mutex timerSyncsMutex;
 
     void timerLoop();
 
@@ -16,6 +23,7 @@ public:
     RootTimer(unsigned int baseIntervalNs);
     void start();
     void stop();
+    Sync& obtainSync(unsigned int interval);
 };
 
 

@@ -24,3 +24,18 @@ void RootTimer::start() {
 void RootTimer::stop() {
     this->isRunning.store(false);
 }
+
+Sync& RootTimer::obtainSync(unsigned int interval) {
+    Sync sync;
+
+    sync.id = generator.randomULong();
+    std::mutex mutex;
+    std::condition_variable cv;
+    sync.mutex = std::make_shared<std::mutex*>(&mutex);
+    sync.condVar = std::make_shared<std::condition_variable*>(&cv);
+    sync.interval = std::make_shared<std::atomic<unsigned int>>(interval);
+    sync.state = std::make_shared<std::atomic<bool>>(false);
+
+    this->timerSyncs.emplace(sync.id, sync);
+    return this->timerSyncs.at(sync.id);
+}

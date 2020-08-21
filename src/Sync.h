@@ -5,6 +5,7 @@
 
 class Sync {
 public:
+    unsigned long id;
     std::shared_ptr<std::mutex*> mutex;
     std::shared_ptr<std::condition_variable*> condVar;
     std::shared_ptr<std::atomic<bool>> state;
