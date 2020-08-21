@@ -47,7 +47,7 @@ ExternalProject_Get_Property(libconfig SOURCE_DIR)
 message("libconfig Source Dir = ${SOURCE_DIR}")
 set(libconfig_SOURCE_DIR ${SOURCE_DIR})
 
-add_library(timer src/RootTimer.cpp src/Config.cpp src/Config.h)
+add_library(timer src/RootTimer.cpp src/Config.cpp src/Config.h src/Sync.h)
 target_include_directories(timer PUBLIC src ${plog_SOURCE_DIR}/include ${libconfig_SOURCE_DIR}/lib)
 target_link_libraries(timer PRIVATE ${libconfig_SOURCE_DIR}/out/libconfig++.dylib)
 
