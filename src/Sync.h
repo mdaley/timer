@@ -5,12 +5,10 @@
 
 class Sync {
 public:
-    Sync(std::mutex* mutex_, std::condition_variable* condVar_, unsigned int interval_) :
-            mutex{mutex_}, condVar{condVar_}, state{false}, interval{interval_} {};
-    std::mutex* mutex;
-    std::condition_variable* condVar;
-    bool state;
-    unsigned int interval;
+    std::shared_ptr<std::mutex*> mutex;
+    std::shared_ptr<std::condition_variable*> condVar;
+    std::shared_ptr<std::atomic<bool>> state;
+    std::shared_ptr<std::atomic<unsigned int>> interval;
 };
 
 

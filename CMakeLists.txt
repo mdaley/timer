@@ -8,7 +8,7 @@ if (NOT "${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}/build")
 endif()
 
 project(timer)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 include(FetchContent)
 include(ExternalProject)
@@ -47,7 +47,7 @@ ExternalProject_Get_Property(libconfig SOURCE_DIR)
 message("libconfig Source Dir = ${SOURCE_DIR}")
 set(libconfig_SOURCE_DIR ${SOURCE_DIR})
 
-add_library(timer src/RootTimer.cpp src/Config.cpp src/Config.h src/Sync.h)
+add_library(timer src/RootTimer.cpp src/Config.cpp src/Config.h src/Sync.h src/RwConcurrentUnorderedMap.h)
 target_include_directories(timer PUBLIC src ${plog_SOURCE_DIR}/include ${libconfig_SOURCE_DIR}/lib)
 target_link_libraries(timer PRIVATE ${libconfig_SOURCE_DIR}/out/libconfig++.dylib)
 
