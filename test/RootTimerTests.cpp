@@ -17,12 +17,13 @@ TEST_CASE("Sync can be stored in map, getting from map refers to same instance")
     sync1.interval = std::make_shared<std::atomic<unsigned int>>(7);
     sync1.state = std::make_shared<std::atomic<bool>>(false);
 
-    RwConcurrentUnorderedMap<int, Sync> m;
+    std::shared_ptr<Sync> fg = std::make_shared<Sync>(sync1);
+    RwConcurrentUnorderedMap<int, std::shared_ptr<Sync>> m;
     std::shared_timed_mutex mut;
 
-    m.emplace(1, sync1);
+    m.emplace(1, fg);
 
-    Sync s = m.at(1);
+    Sync s = *(m.at(1).get());
 
     // the mutex pointer stored in sync1 is to the same object as is stored in a Sync value returned from the map.
     CHECK(s.mutex.get() == sync1.mutex.get());
@@ -55,7 +56,7 @@ TEST_CASE("Sync can be stored in map, getting from map refers to same instance")
     CHECK(m.size() == 1);
     bool oor{false};
     try {
-        Sync notThere = m.at(17);
+        Sync notThere = *(m.at(17).get());
     } catch(std::out_of_range o) {
         oor = true;
     }
