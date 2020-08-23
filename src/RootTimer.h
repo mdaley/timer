@@ -14,7 +14,7 @@ private:
     unsigned int baseIntervalNs;
     std::atomic<bool> isRunning{false};
 
-    RwConcurrentUnorderedMap<unsigned long, Sync> timerSyncs;
+    RwConcurrentUnorderedMap<unsigned long, std::shared_ptr<Sync>> timerSyncs;
     std::shared_timed_mutex timerSyncsMutex;
 
     void timerLoop();
@@ -23,8 +23,7 @@ public:
     RootTimer(unsigned int baseIntervalNs);
     void start();
     void stop();
-    Sync& obtainSync(unsigned int interval);
+    std::shared_ptr<Sync> obtainSync(unsigned int interval);
 };
-
 
 #endif //TIMER_ROOTTIMER_H

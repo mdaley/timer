@@ -25,7 +25,7 @@ void RootTimer::stop() {
     this->isRunning.store(false);
 }
 
-Sync& RootTimer::obtainSync(unsigned int interval) {
+std::shared_ptr<Sync> RootTimer::obtainSync(unsigned int interval) {
     Sync sync;
 
     sync.id = generator.randomULong();
@@ -36,6 +36,6 @@ Sync& RootTimer::obtainSync(unsigned int interval) {
     sync.interval = std::make_shared<std::atomic<unsigned int>>(interval);
     sync.state = std::make_shared<std::atomic<bool>>(false);
 
-    this->timerSyncs.emplace(sync.id, sync);
+    this->timerSyncs.emplace(sync.id, std::make_shared<Sync>(sync));
     return this->timerSyncs.at(sync.id);
 }
