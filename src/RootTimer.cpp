@@ -5,27 +5,37 @@ RootTimer::RootTimer(unsigned int baseIntervalNs) {
 }
 
 void RootTimer::timerLoop() {
+    const auto triggerFn = [](TimedWorker* worker){
+        worker->trigger();
+    };
+
     while(this->isRunning.load()) {
         std::this_thread::sleep_for(std::chrono::nanoseconds(baseIntervalNs));
-        PLOG_DEBUG << "Loop";
+        workers.iterateLocked(triggerFn);
     }
 
-    PLOG_DEBUG << "Root timer loop finished";
+    PLOGD << "Root timer loop finished";
 }
 
 void RootTimer::start() {
     this->isRunning.store(true);
-    PLOG_DEBUG << "Starting root timer loop";
+    PLOGD << "Starting root timer loop";
     auto thread = std::thread(&RootTimer::timerLoop, this);
     thread.detach();
-    PLOG_DEBUG << "Root timer loop started";
+    PLOGD << "Root timer loop started";
 }
 
 void RootTimer::stop() {
+    PLOGD << "Stopping root timer loop.";
     this->isRunning.store(false);
 }
 
-std::shared_ptr<Sync> RootTimer::obtainSync(unsigned int interval) {
+void RootTimer::addWorker(TimedWorker *worker) {
+    this->workers.emplace(generator.randomULong(), worker);
+    worker->start();
+}
+
+/*std::shared_ptr<Sync> RootTimer::obtainSync(unsigned int interval) {
     Sync sync;
 
     sync.id = generator.randomULong();
@@ -38,4 +48,4 @@ std::shared_ptr<Sync> RootTimer::obtainSync(unsigned int interval) {
 
     this->timerSyncs.emplace(sync.id, std::make_shared<Sync>(sync));
     return this->timerSyncs.at(sync.id);
-}
+}*/

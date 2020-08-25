@@ -1,7 +1,8 @@
 #include "TimedWorker.h"
 
 void TimedWorker::workLoop() {
-    std::cout << "workLoop started." << std::endl;
+    PLOGD << "workLoop started...";
+
     while(true) {
         std::unique_lock<std::mutex> lock(mutex_);
         condVar_.wait(lock, [this]{
@@ -14,27 +15,32 @@ void TimedWorker::workLoop() {
             break;
         }
 
-        std::cout << "Working..." <<std::endl;
+        PLOGD << "Calling work()...";
         work();
 
         lock.unlock();
         condVar_.notify_one();
     }
+
+    PLOGD << "Worker thread completed.";
 }
 
 void TimedWorker::start() {
-    std::cout << "Worker start" << std::endl;
+    PLOGD << "Worker start...";
     this->running_ = true;
     auto thread = std::thread(&TimedWorker::workLoop, this);
     thread.detach();
 }
 
 void TimedWorker::stop() {
+    PLOGD << "Worker stop.";
     this->running_ = false;
 }
 
 void TimedWorker::trigger() {
-    std::lock_guard<std::mutex> lock(mutex_);
+    PLOGD << "Trigger.";
+    std::unique_lock<std::mutex> lock(mutex_);
     ready_ = true;
+    lock.unlock();
     condVar_.notify_one();
 }
