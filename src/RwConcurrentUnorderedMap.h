@@ -5,7 +5,7 @@
 #include <shared_mutex>
 #include <typeinfo>
 #include <iostream>
-
+/*
 template<typename K, typename V>
 class RwConcurrentUnorderedMap {
 private:
@@ -26,13 +26,13 @@ public:
         return map.size();
     }
 
-    /*void iterate() {
+    void iterate() {
         std::shared_lock<std::shared_timed_mutex> readLock(mutex);
         for (auto it = map.cbegin(); it != map.end(); it++) {
             std::cout << typeid(it).name() << std::endl;
             //it->second;
         }
-    }*/
+    }
 
     void iterateLocked(void (*f)(V)) {
         std::lock_guard<std::shared_timed_mutex> iterateLock(mutex);
@@ -41,14 +41,15 @@ public:
         }
     }
 
-    /*std::unique_lock<std::shared_timed_mutex>& lockForIterate() {
+    std::unique_lock<std::shared_timed_mutex>& lockForIterate() {
         std::unique_lock<std::shared_timed_mutex> iterateLock(mutex);
         return iterateLock;
     }
 
     void unlockForIterate(std::unique_lock<std::shared_timed_mutex>& iterateLock) {
         iterateLock.unlock();
-    }*/
+    }
 };
 
 #endif //TIMER_RW_CONCURRENT_UNORDERED_MAP_H
+*/

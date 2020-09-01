@@ -5,13 +5,13 @@ RootTimer::RootTimer(unsigned int baseIntervalNs) {
 }
 
 void RootTimer::timerLoop() {
-    const auto triggerFn = [](TimedWorker* worker){
+    const auto triggerFn = [](TriggeredWorker* worker){
         worker->trigger();
     };
 
     while(this->isRunning.load()) {
         std::this_thread::sleep_for(std::chrono::nanoseconds(baseIntervalNs));
-        workers.iterateLocked(triggerFn);
+        //workers.iterateLocked(triggerFn);
     }
 
     PLOGD << "Root timer loop finished";
@@ -30,8 +30,8 @@ void RootTimer::stop() {
     this->isRunning.store(false);
 }
 
-void RootTimer::addWorker(TimedWorker *worker) {
-    this->workers.emplace(generator.randomULong(), worker);
+void RootTimer::addWorker(TriggeredWorker *worker) {
+    //this->workers.emplace(generator.randomULong(), worker);
     worker->start();
 }
 

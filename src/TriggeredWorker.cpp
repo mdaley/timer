@@ -1,17 +1,20 @@
-#include "TimedWorker.h"
+#include "TriggeredWorker.h"
 
-void TimedWorker::workLoop() {
+TriggeredWorker::~TriggeredWorker() {
+    stop();
+    thread_.join();
+}
+
+void TriggeredWorker::workLoop() {
     PLOGD << "workLoop started...";
 
     while(true) {
         std::unique_lock<std::mutex> lock(mutex_);
         condVar_.wait(lock, [this]{
-            bool ready = this->ready_;
-            bool running = this->running_;
-            return ready | !running; });
-        this->ready_ = false;
+            return ready_ | !running_; });
+        ready_ = false;
 
-        if (!this->running_) {
+        if (!running_) {
             break;
         }
 
@@ -25,19 +28,21 @@ void TimedWorker::workLoop() {
     PLOGD << "Worker thread completed.";
 }
 
-void TimedWorker::start() {
+void TriggeredWorker::start() {
     PLOGD << "Worker start...";
-    this->running_ = true;
-    auto thread = std::thread(&TimedWorker::workLoop, this);
-    thread.detach();
+    running_ = true;
+    thread_ = std::thread(&TriggeredWorker::workLoop, this);
 }
 
-void TimedWorker::stop() {
+void TriggeredWorker::stop() {
     PLOGD << "Worker stop.";
-    this->running_ = false;
+    std::unique_lock<std::mutex> lock(mutex_);
+    running_ = false;
+    lock.unlock();
+    condVar_.notify_one();
 }
 
-void TimedWorker::trigger() {
+void TriggeredWorker::trigger() {
     PLOGD << "Trigger.";
     std::unique_lock<std::mutex> lock(mutex_);
     ready_ = true;
