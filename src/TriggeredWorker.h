@@ -3,13 +3,14 @@
 
 #include <thread>
 #include <plog/Log.h>
+#include "readerwriterqueue.h"
+
+namespace mc = moodycamel;
 
 class TriggeredWorker {
 private:
-    std::mutex mutex_;
-    std::condition_variable condVar_;
+    mc::BlockingReaderWriterQueue<bool> queue{100};
     bool running_{false};
-    bool ready_{false};
 
     std::thread thread_;
 
@@ -21,6 +22,7 @@ public:
     void start();
     void stop();
     void trigger();
+    bool isRunning();
 };
 
 #endif //TIMER_TRIGGERED_WORKER_H

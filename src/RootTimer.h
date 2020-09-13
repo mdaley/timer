@@ -5,8 +5,6 @@
 #include <iostream>
 #include <plog/Log.h>
 #include "RandomGenerator.h"
-//#include "RwConcurrentUnorderedMap.h"
-#include "Sync.h"
 #include "TriggeredWorker.h"
 
 class RootTimer {

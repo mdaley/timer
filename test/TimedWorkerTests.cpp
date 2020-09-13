@@ -16,18 +16,21 @@ TEST_CASE("Simple timed worker performs work when triggered") {
     SimpleTriggeredWorker worker;
 
     worker.start();
+    CHECK(worker.isRunning());
 
     for (int i = 0; i < 1000; i++) {
         worker.trigger();
-        std::this_thread::sleep_for(std::chrono::microseconds(100));
     }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     CHECK(twt_count == 1000);
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     worker.stop();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    CHECK(!worker.isRunning());
 }
 
 TEST_CASE("Start and immediately stop a worker works, with no work done") {
@@ -42,39 +45,36 @@ TEST_CASE("Start and immediately stop a worker works, with no work done") {
 
     NullTriggeredWorker worker;
 
-    // worker starts and then waits in the loop
     worker.start();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     worker.stop();
 
-    CHECK(!workDone);
-
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    CHECK(!workDone);
 }
 
-TEST_CASE("On stop work being done completes then worker stops") {
+TEST_CASE("Existing work completes before worker stops") {
     static std::atomic<bool> workFinished{false};
 
-    class HangsForeverWorker : public TriggeredWorker {
+    class SlowWorker : public TriggeredWorker {
     protected:
         void work() override {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
             workFinished.store(true);
+            PLOGI << "work done";
         }
     };
 
-    HangsForeverWorker worker;
+    SlowWorker worker;
 
-    // worker starts and then waits in the loop
     worker.start();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     worker.trigger();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     worker.stop();
 
-    CHECK(workFinished);
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    PLOGI << "result " << workFinished;
+    CHECK(workFinished.load());
 }
  // work throws
  // state maintained between calls

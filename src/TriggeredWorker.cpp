@@ -9,20 +9,16 @@ void TriggeredWorker::workLoop() {
     PLOGD << "workLoop started...";
 
     while(true) {
-        std::unique_lock<std::mutex> lock(mutex_);
-        condVar_.wait(lock, [this]{
-            return ready_ | !running_; });
-        ready_ = false;
+        bool state;
+        queue.wait_dequeue(state);
 
-        if (!running_) {
+        if (!state) {
+            running_ = false;
             break;
         }
 
         PLOGD << "Calling work()...";
         work();
-
-        lock.unlock();
-        condVar_.notify_one();
     }
 
     PLOGD << "Worker thread completed.";
@@ -36,16 +32,14 @@ void TriggeredWorker::start() {
 
 void TriggeredWorker::stop() {
     PLOGD << "Worker stop.";
-    std::unique_lock<std::mutex> lock(mutex_);
-    running_ = false;
-    lock.unlock();
-    condVar_.notify_one();
+    queue.enqueue(false);
 }
 
 void TriggeredWorker::trigger() {
     PLOGD << "Trigger.";
-    std::unique_lock<std::mutex> lock(mutex_);
-    ready_ = true;
-    lock.unlock();
-    condVar_.notify_one();
+    queue.enqueue(true);
+}
+
+bool TriggeredWorker::isRunning() {
+    return running_;
 }
